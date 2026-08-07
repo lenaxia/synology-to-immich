@@ -11,4 +11,4 @@ RUN pip install --no-cache-dir -e .
 
 COPY config.example.yaml config.yaml
 
-ENTRYPOINT ["python", "-m", "syno_immich.cli"]
+CMD ["syno-bridge"]
