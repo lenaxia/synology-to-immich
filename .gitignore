@@ -1,0 +1,6 @@
+# Synology Photos → Immich Migration
+__pycache__/
+*.pyc
+config.yaml
+*.env
+.DS_Store

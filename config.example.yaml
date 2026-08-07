@@ -1,0 +1,83 @@
+# Synology Photos → Immich Migration Configuration
+#
+# Copy this file to config.yaml and fill in your values.
+# All scripts read this file via the CONFIG_PATH env var (default: /config/config.yaml).
+
+# ── Synology Photo DB (read-only copy — see 00-dump-syno-db/) ──────────────
+syno_db:
+  host: localhost          # or your Postgres host
+  port: 5432
+  dbname: app              # Synology Photos uses "app" by default
+  user: postgres
+  password: ""             # or set env: SYNO_DB_PASSWORD
+  sslmode: prefer
+
+# ── Immich Postgres DB ─────────────────────────────────────────────────────
+immich_db:
+  host: localhost
+  port: 5432
+  dbname: immich
+  user: postgres
+  password: ""             # or set env: IMMICH_DB_PASSWORD
+  sslmode: prefer
+
+# ── Immich API ─────────────────────────────────────────────────────────────
+immich_api:
+  url: http://localhost:2283
+  # API key for an admin user (needed for Phase 3 name assignment).
+  # Create one in Immich: Administration → API Keys.
+  # Can also be set via env: ADMIN_API_KEY
+  admin_api_key: ""
+
+# ── NFS mounts (Synology photo storage) ────────────────────────────────────
+# Each mount maps a logical name to a local path where the Synology NFS share
+# is mounted. Most setups have a single mount.
+nfs_mounts:
+  # For single-volume Synology:
+  photos: /mnt/syno-photos
+  # For multi-volume or LDAP setups, add more:
+  # photos_ldap: /mnt/syno-photos-ldap
+
+# ── User mapping: Synology id_user → Immich ────────────────────────────────
+# Each entry maps a Synology Photos user to an Immich account.
+#
+# To find Synology user IDs:
+#   psql -h <syno-host> -U postgres -d app -c "SELECT id, name FROM user_info"
+#
+# To find Immich user IDs:
+#   psql -h <immich-host> -U postgres -d immich -c 'SELECT id, email FROM "user"'
+#
+# Only include users who have an Immich account. Users without Immich
+# accounts are automatically skipped.
+users:
+  # ── Example (replace with your values) ──
+  # - syno_user_id: 2                    # integer from Synology user_info.id
+  #   immich_user_id: "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee"  # UUID from Immich
+  #   mount: photos                      # must match a key in nfs_mounts above
+  #   home_dir: john                     # NFS subdirectory under the mount
+  #   api_key: ""                        # Immich API key for this user (or set via env: <NAME>_API_KEY)
+  #   api_key_env: JOHN_API_KEY          # env var name for the API key
+  - syno_user_id: 1
+    immich_user_id: "00000000-0000-0000-0000-000000000000"
+    mount: photos
+    home_dir: user1
+    api_key: ""
+    api_key_env: USER1_API_KEY
+
+# ── Bridge settings (Phase 1) ──────────────────────────────────────────────
+bridge:
+  sample_size: 3000        # post-run SHA-1 verification sample
+  accuracy_threshold: 99.0 # minimum acceptable accuracy (%)
+
+# ── Upload settings (Phase 2) ──────────────────────────────────────────────
+upload:
+  concurrency: 4           # parallel upload workers
+  max_retries: 3           # retries per file on transient errors
+  retry_base_backoff: 30   # seconds (doubles each retry)
+  error_abort_threshold: 20  # abort after this many upload errors
+
+# ── Face matcher settings (Phase 3) ────────────────────────────────────────
+faces:
+  iou_threshold: 0.3       # IoU overlap required to match a face
+  min_votes: 5             # minimum matched faces to auto-assign a name
+  margin_ratio: 2.0        # top vote-getter must have ≥ this × runner-up

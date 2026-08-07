@@ -1,0 +1,1 @@
+"""Synology → Immich migration package."""
