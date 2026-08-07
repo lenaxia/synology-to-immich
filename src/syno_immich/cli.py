@@ -6,6 +6,7 @@ Each function wraps a phase script so it can be called as a console script:
   syno-bridge — Phase 1: build SHA-1 bridge
   syno-upload — Phase 2: upload missing photos
   syno-faces  — Phase 3: match face tags
+  syno-albums — Phase 4: migrate albums
 """
 
 import os
@@ -32,3 +33,9 @@ def faces_main():
     from syno_immich import faces
 
     faces.main()
+
+
+def albums_main():
+    from syno_immich import albums
+
+    albums.main()
