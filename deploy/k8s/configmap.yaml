@@ -1,0 +1,30 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: syno-migration-config
+  namespace: immich
+data:
+  config.yaml: |
+    # Paste your config.yaml contents here
+    # See config.example.yaml for the full template
+    syno_db:
+      host: synofotopg-rw.databases.svc.cluster.local
+      port: 5432
+      dbname: app
+      user: postgres
+    immich_db:
+      host: immich-postgres-rw.immich.svc.cluster.local
+      port: 5432
+      dbname: immich
+      user: postgres
+    immich_api:
+      url: http://immich-server.immich.svc.cluster.local:2283
+    nfs_mounts:
+      photos: /mnt/syno-photos
+    users:
+      - syno_user_id: 1
+        immich_user_id: "00000000-0000-0000-0000-000000000000"
+        mount: photos
+        home_dir: user1
+        api_key_env: USER1_API_KEY

@@ -1,0 +1,32 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.backends._legacy:_Backend"
+
+[project]
+name = "synology-to-immich"
+version = "0.1.0"
+description = "Migrate photos, videos, and face tags from Synology Photos to Immich"
+readme = "README.md"
+license = {text = "MIT"}
+requires-python = ">=3.10"
+dependencies = [
+    "psycopg2-binary>=2.9",
+    "requests>=2.31",
+    "requests-toolbelt>=1.0",
+    "PyYAML>=6.0",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=7.0", "ruff>=0.1"]
+
+[project.scripts]
+syno-dump = "syno_immich.cli:dump_main"
+syno-bridge = "syno_immich.cli:bridge_main"
+syno-upload = "syno_immich.cli:upload_main"
+syno-faces = "syno_immich.cli:faces_main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+syno_immich = ["*.sql"]

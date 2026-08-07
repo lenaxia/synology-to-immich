@@ -1,0 +1,36 @@
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: syno-immich-faces
+  namespace: immich
+spec:
+  backoffLimit: 0
+  activeDeadlineSeconds: 3600
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: faces
+          image: ghcr.io/lenaxia/synology-to-immich:latest
+          command: ["syno-faces"]
+          resources:
+            requests: {memory: 512Mi, cpu: 200m}
+            limits: {memory: 2Gi, cpu: 2}
+          env:
+            - name: CONFIG_PATH
+              value: /config/config.yaml
+            - name: PGUSER
+              valueFrom:
+                secretKeyRef: {name: postgres-superuser, key: username}
+            - name: PGPASSWORD
+              valueFrom:
+                secretKeyRef: {name: postgres-superuser, key: password}
+            - name: ADMIN_API_KEY
+              valueFrom:
+                secretKeyRef: {name: immich-api-keys, key: admin}
+          volumeMounts:
+            - {name: config, mountPath: /config, readOnly: true}
+      volumes:
+        - name: config
+          configMap: {name: syno-migration-config}

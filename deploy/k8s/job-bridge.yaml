@@ -1,0 +1,39 @@
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: syno-immich-bridge
+  namespace: immich
+spec:
+  backoffLimit: 0
+  activeDeadlineSeconds: 172800
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: bridge
+          image: ghcr.io/lenaxia/synology-to-immich:latest
+          command: ["syno-bridge"]
+          resources:
+            requests: {memory: 1Gi, cpu: 500m}
+            limits: {memory: 8Gi, cpu: 4}
+          env:
+            - name: CONFIG_PATH
+              value: /config/config.yaml
+            - name: PGUSER
+              valueFrom:
+                secretKeyRef: {name: postgres-superuser, key: username}
+            - name: PGPASSWORD
+              valueFrom:
+                secretKeyRef: {name: postgres-superuser, key: password}
+          volumeMounts:
+            - {name: config, mountPath: /config, readOnly: true}
+            - {name: syno-photos, mountPath: /mnt/syno-photos, readOnly: true}
+      volumes:
+        - name: config
+          configMap: {name: syno-migration-config}
+        - name: syno-photos
+          nfs:
+            server: 192.168.1.100
+            path: /volume1/homes
+            readOnly: true

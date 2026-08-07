@@ -1,0 +1,26 @@
+# PR Review — thin caller delegating to the reusable workflow in
+# lenaxia/ai-workflows. The reusable workflow appends the formal-blocking-
+# review directive (submit via `gh pr review` as APPROVE / REQUEST_CHANGES).
+#
+# Pinned to ai-workflows v0.2.7 — bump by editing the tag below (or via
+# propagate.yml in ai-workflows).
+name: PR Review
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+permissions:
+  id-token: write
+  contents: read
+  issues: write
+  pull-requests: write
+
+jobs:
+  review:
+    if: github.event.pull_request.user.login != 'renovate[bot]'
+    uses: lenaxia/ai-workflows/.github/workflows/pr-review.yml@v0.2.7
+    secrets: inherit
+    with:
+      version: v0.2.7
+      project_name: synology-to-immich

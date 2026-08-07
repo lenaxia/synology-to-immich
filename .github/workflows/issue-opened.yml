@@ -1,0 +1,25 @@
+# Issue Opened — thin caller delegating to the reusable workflow in
+# lenaxia/ai-workflows. The reusable workflow runs the issue-responder AI,
+# posts the command footer, and configures git identity.
+#
+# Pinned to ai-workflows v0.2.7 — bump by editing the tag below (or via
+# propagate.yml in ai-workflows).
+name: Issue Opened
+
+on:
+  issues:
+    types: [opened]
+
+permissions:
+  id-token: write
+  contents: read
+  issues: write
+  pull-requests: write
+
+jobs:
+  respond:
+    uses: lenaxia/ai-workflows/.github/workflows/issue-opened.yml@v0.2.7
+    secrets: inherit
+    with:
+      version: v0.2.7
+      project_name: synology-to-immich

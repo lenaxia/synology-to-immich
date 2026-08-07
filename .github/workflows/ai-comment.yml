@@ -1,0 +1,58 @@
+# AI Commands — thin caller delegating slash-command AI flows to the
+# reusable workflow in lenaxia/ai-workflows.
+#
+# The command-token + author_association filter MUST live here (the caller) —
+# a called workflow's job-level `if:` against github.event.comment.* is not
+# reliably evaluated for issue_comment events.
+#
+# Pinned to ai-workflows v0.2.7 — bump by editing the tag below (or via
+# propagate.yml in ai-workflows).
+name: AI Commands
+
+on:
+  issue_comment:
+    types: [created]
+  pull_request_review_comment:
+    types: [created]
+
+permissions:
+  id-token: write
+  contents: write
+  issues: write
+  pull-requests: write
+
+jobs:
+  respond:
+    if: |
+      (startsWith(github.event.comment.body, '/ai') ||
+       startsWith(github.event.comment.body, '/review') ||
+       startsWith(github.event.comment.body, '/fix') ||
+       startsWith(github.event.comment.body, '/implement') ||
+       startsWith(github.event.comment.body, '/analyze') ||
+       startsWith(github.event.comment.body, '/test') ||
+       startsWith(github.event.comment.body, '/security') ||
+       startsWith(github.event.comment.body, '/explain') ||
+       startsWith(github.event.comment.body, '/triage') ||
+       startsWith(github.event.comment.body, '/help') ||
+       startsWith(github.event.comment.body, '/design') ||
+       startsWith(github.event.comment.body, '/merge') ||
+       contains(github.event.comment.body, ' /ai') ||
+       contains(github.event.comment.body, ' /review') ||
+       contains(github.event.comment.body, ' /fix') ||
+       contains(github.event.comment.body, ' /implement') ||
+       contains(github.event.comment.body, ' /analyze') ||
+       contains(github.event.comment.body, ' /test') ||
+       contains(github.event.comment.body, ' /security') ||
+       contains(github.event.comment.body, ' /explain') ||
+       contains(github.event.comment.body, ' /triage') ||
+       contains(github.event.comment.body, ' /help') ||
+       contains(github.event.comment.body, ' /design') ||
+       contains(github.event.comment.body, ' /merge')) &&
+      (github.event.comment.author_association == 'OWNER' ||
+       github.event.comment.author_association == 'MEMBER' ||
+       github.event.comment.author_association == 'COLLABORATOR')
+    uses: lenaxia/ai-workflows/.github/workflows/ai-comment.yml@v0.2.7
+    secrets: inherit
+    with:
+      version: v0.2.7
+      project_name: synology-to-immich

@@ -25,7 +25,6 @@ import sys
 import time
 from collections import Counter, defaultdict
 
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)) + "/../src")
 
 import psycopg2
 import psycopg2.extras

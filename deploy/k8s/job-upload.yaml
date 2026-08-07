@@ -1,0 +1,55 @@
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: syno-immich-upload
+  namespace: immich
+spec:
+  backoffLimit: 0
+  activeDeadlineSeconds: 604800
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: upload
+          image: ghcr.io/lenaxia/synology-to-immich:latest
+          command: ["syno-upload"]
+          resources:
+            requests: {memory: 2Gi, cpu: 500m}
+            limits: {memory: 16Gi, cpu: 4}
+          env:
+            - name: CONFIG_PATH
+              value: /config/config.yaml
+            - name: PGUSER
+              valueFrom:
+                secretKeyRef: {name: postgres-superuser, key: username}
+            - name: PGPASSWORD
+              valueFrom:
+                secretKeyRef: {name: postgres-superuser, key: password}
+            # API keys for each user (must match api_key_env in config.yaml):
+            - {name: USER1_API_KEY, valueFrom: {secretKeyRef: {name: immich-api-keys, key: user1}}}
+          volumeMounts:
+            - {name: config, mountPath: /config, readOnly: true}
+            - {name: checkpoint, mountPath: /checkpoint}
+            - {name: syno-photos, mountPath: /mnt/syno-photos, readOnly: true}
+      volumes:
+        - name: config
+          configMap: {name: syno-migration-config}
+        - name: checkpoint
+          persistentVolumeClaim: {claimName: upload-checkpoint}
+        - name: syno-photos
+          nfs:
+            server: 192.168.1.100
+            path: /volume1/homes
+            readOnly: true
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: upload-checkpoint
+  namespace: immich
+spec:
+  accessModes: [ReadWriteOnce]
+  resources:
+    requests:
+      storage: 500Mi

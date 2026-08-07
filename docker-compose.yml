@@ -1,0 +1,16 @@
+services:
+  syno-migration:
+    build: .
+    volumes:
+      - ./config.yaml:/config/config.yaml:ro
+      - ./checkpoint:/checkpoint
+      # Mount your Synology NFS share here (read-only):
+      - /mnt/syno-photos:/mnt/syno-photos:ro
+    environment:
+      - CONFIG_PATH=/config/config.yaml
+      - PGUSER=postgres
+      - PGPASSWORD=your_password
+      # Override per-user API keys here or in config.yaml:
+      # - USER1_API_KEY=your_immich_api_key
+    command: ["syno-bridge"]
+    # Available commands: syno-dump, syno-bridge, syno-upload, syno-faces
