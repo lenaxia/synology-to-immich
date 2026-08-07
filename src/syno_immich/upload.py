@@ -37,7 +37,7 @@ import requests
 
 from syno_immich.config import load_config
 
-cfg = load_config()
+cfg = None
 
 logging.basicConfig(
     level=logging.INFO,
@@ -180,6 +180,8 @@ def upload_file(api_key, immich_url, unit_id, path, takentime, mtime):
 
 
 def main():
+    global cfg
+    cfg = load_config()
     dry_run = os.environ.get("DRY_RUN", "false").lower() == "true"
     upload_users = os.environ.get("UPLOAD_USERS", "all").lower().split(",")
     checkpoint_dir = os.environ.get("CHECKPOINT_DIR", "/checkpoint")

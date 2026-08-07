@@ -32,7 +32,7 @@ import requests
 
 from syno_immich.config import load_config
 
-cfg = load_config()
+cfg = None
 
 logging.basicConfig(
     level=logging.INFO,
@@ -213,6 +213,8 @@ def assign_person_name(api_key, immich_url, person_id, name):
 
 
 def main():
+    global cfg
+    cfg = load_config()
     dry_run = os.environ.get("DRY_RUN", "false").lower() == "true"
     iou_threshold = cfg.face_iou_threshold
     min_votes = cfg.face_min_votes

@@ -34,7 +34,7 @@ import psycopg2.extras
 
 from syno_immich.config import load_config
 
-cfg = load_config()
+cfg = None
 
 logging.basicConfig(
     level=logging.INFO,
@@ -186,6 +186,8 @@ def compute_sha1(path):
 
 
 def main():
+    global cfg
+    cfg = load_config()
     dry_run = os.environ.get("DRY_RUN", "false").lower() == "true"
     max_photos = int(os.environ["MAX_PHOTOS"]) if "MAX_PHOTOS" in os.environ else None
     target_units_path = os.environ.get("TARGET_UNITS")
