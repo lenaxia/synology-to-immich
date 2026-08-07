@@ -1,5 +1,0 @@
-[console_scripts]
-syno-bridge = syno_immich.cli:bridge_main
-syno-dump = syno_immich.cli:dump_main
-syno-faces = syno_immich.cli:faces_main
-syno-upload = syno_immich.cli:upload_main
