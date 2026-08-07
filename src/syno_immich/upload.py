@@ -193,17 +193,23 @@ def main():
         target_syno_ids = sorted(cfg.syno_to_immich.keys())
     else:
         target_syno_ids = []
+        name_to_syno = {u.home_dir.lower(): u.syno_user_id for u in cfg.users}
         for u in upload_users:
             u = u.strip()
             try:
                 sid = int(u)
+                if sid in cfg.syno_to_immich:
+                    target_syno_ids.append(sid)
+                else:
+                    log.warning("Unknown syno_user_id '%s', skipping", u)
             except ValueError:
-                log.warning("Invalid syno_user_id '%s', skipping", u)
-                continue
-            if sid in cfg.syno_to_immich:
-                target_syno_ids.append(sid)
-            else:
-                log.warning("Unknown syno_user_id '%s', skipping", u)
+                if u.lower() in name_to_syno:
+                    target_syno_ids.append(name_to_syno[u.lower()])
+                else:
+                    log.warning(
+                        "Unknown user '%s' (expected numeric ID or home_dir name), skipping",
+                        u,
+                    )
 
     if not target_syno_ids:
         log.error("No users to process")
