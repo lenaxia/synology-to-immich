@@ -2,7 +2,7 @@
 # lenaxia/ai-workflows. The reusable workflow runs the issue-responder AI,
 # posts the command footer, and configures git identity.
 #
-# Pinned to ai-workflows v0.2.7 — bump by editing the tag below (or via
+# Pinned to ai-workflows v0.2.10 — bump by editing the tag below (or via
 # propagate.yml in ai-workflows).
 name: Issue Opened
 
@@ -18,8 +18,8 @@ permissions:
 
 jobs:
   respond:
-    uses: lenaxia/ai-workflows/.github/workflows/issue-opened.yml@v0.2.7
+    uses: lenaxia/ai-workflows/.github/workflows/issue-opened.yml@v0.2.10
     secrets: inherit
     with:
-      version: v0.2.7
+      version: v0.2.10
       project_name: synology-to-immich

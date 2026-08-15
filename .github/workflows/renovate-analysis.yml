@@ -1,0 +1,47 @@
+# Renovate PR Analysis — thin caller delegating to the reusable
+# lenaxia/ai-workflows renovate-analysis workflow.
+#
+# Scheduled + manual batch analysis of Renovate PRs. The analysis logic,
+# prompt assembly, comment posting/verification, and safe-merge rules live in
+# the reusable workflow (lenaxia/ai-workflows/.github/workflows/renovate-analysis.yml)
+# and this repo's forked prompt (.github/prompts/renovate-analysis.md, which
+# carries the synology-to-immich-specific exclusions).
+#
+# Why schedule/workflow_dispatch and NOT pull_request? The opencode action's
+# assertPermissions() requires the event actor (for pull_request events: the
+# PR author) to be a repo collaborator with write permission. renovate[bot]
+# is an app bot account and can never be a collaborator, so every
+# pull_request-triggered run failed with "User renovate[bot] does not have
+# write permissions" before the AI could analyze. schedule/workflow_dispatch
+# are repo events — no actor — so the permission assertion is skipped
+# entirely.
+#
+# The `uses:` ref MUST be a hardcoded tag (no vars context). propagate.yml in
+# ai-workflows bumps it on every release.
+name: Renovate PR Analysis
+
+on:
+  schedule:
+    # Every 2 hours — picks up newly-opened Renovate PRs and re-analyzes any
+    # that have been updated since the last analysis comment.
+    - cron: "0 */2 * * *"
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: "PR number to analyze (leave empty for all open Renovate PRs)"
+        required: false
+        type: string
+
+permissions:
+  id-token: write
+  contents: write
+  issues: write
+  pull-requests: write
+
+jobs:
+  analyze-prs:
+    uses: lenaxia/ai-workflows/.github/workflows/renovate-analysis.yml@v0.2.10
+    secrets: inherit
+    with:
+      project_name: synology-to-immich
+      pr_number: ${{ inputs.pr_number }}
