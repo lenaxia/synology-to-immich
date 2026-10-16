@@ -18,8 +18,8 @@ permissions:
 
 jobs:
   respond:
-    uses: lenaxia/ai-workflows/.github/workflows/issue-opened.yml@v0.2.7
+    uses: lenaxia/ai-workflows/.github/workflows/issue-opened.yml@v0.2.16
     secrets: inherit
     with:
-      version: v0.2.7
+      version: v0.2.16
       project_name: synology-to-immich
