@@ -19,8 +19,8 @@ permissions:
 jobs:
   review:
     if: github.event.pull_request.user.login != 'renovate[bot]'
-    uses: lenaxia/ai-workflows/.github/workflows/pr-review.yml@v0.2.23
+    uses: lenaxia/ai-workflows/.github/workflows/pr-review.yml@v0.2.25
     secrets: inherit
     with:
-      version: v0.2.23
+      version: v0.2.25
       project_name: synology-to-immich
